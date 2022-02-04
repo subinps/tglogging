@@ -9,7 +9,7 @@ nest_asyncio.apply()
 
 DEFAULT_PAYLOAD = {
     "disable_web_page_preview": True,
-    'parse_mode': "HTML"
+    'parse_mode': "Markdown"
 }
 
 
@@ -38,6 +38,7 @@ class TelegramLogHandler(StreamHandler):
         pending_logs: int = 200000
     ):
         StreamHandler.__init__(self)
+        self.loop = asyncio.get_event_loop()
         self.token = token
         self.log_chat_id = log_chat_id
         self.wait_time = update_interval
@@ -62,7 +63,7 @@ class TelegramLogHandler(StreamHandler):
                 self.floodwait) and self.lines >= self.minimum:
             if self.floodwait:
                 self.floodwait = 0
-            asyncio.run(self.handle_logs())
+            self.loop.run_until_complete(self.handle_logs())
             self.lines = 0
             self.last_update = time.time()
 
@@ -121,7 +122,7 @@ class TelegramLogHandler(StreamHandler):
 
     async def send_message(self, message):
         payload = DEFAULT_PAYLOAD
-        payload['text'] = f"<code>{message}</code>"
+        payload['text'] = f"```{message}```"
         url = self.base_url + "/sendMessage"
         res = await self.send_request(url, payload)
         if res.get('ok'):
@@ -133,7 +134,7 @@ class TelegramLogHandler(StreamHandler):
     async def edit_message(self, message):
         payload = DEFAULT_PAYLOAD
         payload['message_id'] = self.message_id
-        payload['text'] = f"<code>{message}</code>"
+        payload['text'] = f"```{message}```"
         url = self.base_url + "/editMessageText"
         res = await self.send_request(url, payload)
         if not res.get('ok'):
