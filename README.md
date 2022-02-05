@@ -2,6 +2,10 @@
 
 > A simple python package to send your app logs to a telegram chat in realtime.
 
+<p align="center">
+  <img src="images/tglogger.jpg" alt="Sample Image">
+</p>
+
 ### Installing
 
 ``` bash

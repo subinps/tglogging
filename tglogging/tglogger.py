@@ -94,7 +94,8 @@ class TelegramLogHandler(StreamHandler):
             if not to_edit:
                 to_edit = _to_edit  # incase of lengthy lines
             to_new = computed_message[len(to_edit):]
-            await self.edit_message(to_edit)
+            if to_edit != self.current_msg:
+                await self.edit_message(to_edit)
             self.current_msg = to_new
             await self.send_message(to_new)
         else:
@@ -111,7 +112,7 @@ class TelegramLogHandler(StreamHandler):
 
     async def initialise(self):
         payload = DEFAULT_PAYLOAD
-        payload['text'] = "Initializing"
+        payload['text'] = "```Initializing```"
         url = self.base_url + "/sendMessage"
         res = await self.send_request(url, payload)
         if res.get('ok'):
