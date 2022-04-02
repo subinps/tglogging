@@ -116,7 +116,7 @@ class TelegramLogHandler(StreamHandler):
             return res.get("result").get("username"), True
 
     async def initialise(self):
-        payload = DEFAULT_PAYLOAD
+        payload = DEFAULT_PAYLOAD.copy()
         payload["text"] = "```Initializing```"
 
         url = f"{self.base_url}/sendMessage"
@@ -128,7 +128,7 @@ class TelegramLogHandler(StreamHandler):
             await self.handle_error(res)
 
     async def send_message(self, message):
-        payload = DEFAULT_PAYLOAD
+        payload = DEFAULT_PAYLOAD.copy()
         payload["text"] = f"```{message}```"
         url = f"{self.base_url}/sendMessage"
         res = await self.send_request(url, payload)
@@ -139,7 +139,7 @@ class TelegramLogHandler(StreamHandler):
             await self.handle_error(res)
 
     async def edit_message(self, message):
-        payload = DEFAULT_PAYLOAD
+        payload = DEFAULT_PAYLOAD.copy()
         payload["message_id"] = self.message_id
         payload["text"] = f"```{message}```"
         url = f"{self.base_url}/editMessageText"
@@ -151,7 +151,7 @@ class TelegramLogHandler(StreamHandler):
         file = io.BytesIO(logs.encode())
         file.name = "tglogging.logs"
         url = f"{self.base_url}/sendDocument"
-        payload = DEFAULT_PAYLOAD
+        payload = DEFAULT_PAYLOAD.copy()
         payload["caption"] = "Too much logs to send and hence sending as file."
         files = {"document": file}
         with contextlib.suppress(BaseException):
