@@ -33,6 +33,7 @@ logging.basicConfig(
             log_chat_id=-10225533666, 
             update_interval=2, 
             minimum_lines=1, 
+            topic_id=5, 
             pending_logs=200000),
         logging.StreamHandler()
     ]
@@ -48,6 +49,8 @@ logger.info("live log streaming to telegram.")
 ```token``` : A telegram bot token to interact with telegram API.
 
 ```log_chat_id``` : Chat id of chat to which logs are to be send.
+
+```topic_id``` : Topic id of topic to which logs are to be send.
 
 ```update_interval```: Interval between two posting in seconds. Lower intervals will lead to floodwaits. Default to 5 seconds.
 

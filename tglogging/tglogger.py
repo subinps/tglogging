@@ -31,6 +31,7 @@ class TelegramLogHandler(StreamHandler):
         self,
         token: str,
         log_chat_id: int,
+        topic_id: int = None,
         update_interval: int = 5,
         minimum_lines: int = 1,
         pending_logs: int = 200000,
@@ -39,6 +40,7 @@ class TelegramLogHandler(StreamHandler):
         self.loop = asyncio.get_event_loop()
         self.token = token
         self.log_chat_id = log_chat_id
+        self.topic_id = topic_id
         self.wait_time = update_interval
         self.minimum = minimum_lines
         self.pending = pending_logs
@@ -50,6 +52,7 @@ class TelegramLogHandler(StreamHandler):
         self.last_update = 0
         self.base_url = f"https://api.telegram.org/bot{token}"
         DEFAULT_PAYLOAD.update({"chat_id": log_chat_id})
+
 
     def emit(self, record):
         msg = self.format(record)
@@ -131,6 +134,8 @@ class TelegramLogHandler(StreamHandler):
         payload = DEFAULT_PAYLOAD.copy()
         payload["text"] = f"```{message}```"
         url = f"{self.base_url}/sendMessage"
+        if self.topic_id:
+            payload["message_thread_id"] = self.topic_id
         res = await self.send_request(url, payload)
         if res.get("ok"):
             result = res.get("result")
@@ -153,6 +158,8 @@ class TelegramLogHandler(StreamHandler):
         url = f"{self.base_url}/sendDocument"
         payload = DEFAULT_PAYLOAD.copy()
         payload["caption"] = "Too much logs to send and hence sending as file."
+        if self.topic_id:
+            payload["message_thread_id"] = self.topic_id
         files = {"document": file}
         with contextlib.suppress(BaseException):
             del payload["disable_web_page_preview"]
